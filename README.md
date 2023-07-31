@@ -14,8 +14,16 @@ v0.1 Features:
 * Generate request descriptors from a controller class' Javadocs where methods are annotated by Spring MVC annotations.
 
 [![Maven Package](https://github.com/ememisya/restjavadocs/actions/workflows/maven-publish.yml/badge.svg)](https://github.com/ememisya/restjavadocs/actions/workflows/maven-publish.yml)
-  
 ![Coverage](.github/badges/jacoco.svg)
+
+Maven ([see packaging information for repository details](https://github.com/ememisya/restjavadocs/packages/1912864))
+```
+<dependency>
+  <groupId>edu.vt.graduateschool</groupId>
+  <artifactId>restjavadocs</artifactId>
+  <version>0.1</version>
+</dependency>
+```
   
 Usage Example:
 
