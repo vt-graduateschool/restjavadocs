@@ -1,0 +1,11 @@
+overlays
+target
+*.~
+*.swp
+*.iml
+*.keystore
+.idea
+.netbeans
+/nb-configuration.xml
+/nbactions*.xml
+/nbproject
