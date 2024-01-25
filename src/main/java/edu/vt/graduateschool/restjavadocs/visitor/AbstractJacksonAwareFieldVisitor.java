@@ -84,7 +84,7 @@ public abstract class AbstractJacksonAwareFieldVisitor extends AbstractFieldVisi
    * @param node {@link NodeWithAnnotations} to check
    * @return found name in value, or null if none exists
    */
-  protected static final String getJsonPropertyName(final NodeWithAnnotations<?> node)
+  protected static String getJsonPropertyName(final NodeWithAnnotations<?> node)
   {
     final Optional<AnnotationExpr> expression = node.getAnnotationByClass(JsonProperty.class);
     return expression.isPresent() ? getAnnotationValue(expression.get()) : null;
@@ -96,7 +96,7 @@ public abstract class AbstractJacksonAwareFieldVisitor extends AbstractFieldVisi
    * @param node {@link NodeWithAnnotations} to check
    * @return found name in value, or null if none exists
    */
-  protected static final String getJsonGetterName(final NodeWithAnnotations<?> node)
+  protected static String getJsonGetterName(final NodeWithAnnotations<?> node)
   {
     final Optional<AnnotationExpr> expression = node.getAnnotationByClass(JsonGetter.class);
     return expression.isPresent() ? getAnnotationValue(expression.get()) : null;
@@ -112,7 +112,7 @@ public abstract class AbstractJacksonAwareFieldVisitor extends AbstractFieldVisi
    * @param variableDeclarator variableDeclarator
    * @return Name of the response field
    */
-  protected static final String getFieldName(final ClassOrInterfaceDeclaration rootClass,
+  protected static String getFieldName(final ClassOrInterfaceDeclaration rootClass,
           final FieldDeclaration field,
           final VariableDeclarator variableDeclarator)
   {
@@ -144,7 +144,7 @@ public abstract class AbstractJacksonAwareFieldVisitor extends AbstractFieldVisi
    * @param variable variableDeclarator
    * @return {@link Comment} optional
    */
-  protected static final boolean isFieldOptional(final ClassOrInterfaceDeclaration rootClass,
+  protected static boolean isFieldOptional(final ClassOrInterfaceDeclaration rootClass,
           final FieldDeclaration field,
           final VariableDeclarator variable)
   {
@@ -175,7 +175,7 @@ public abstract class AbstractJacksonAwareFieldVisitor extends AbstractFieldVisi
    * @param variableDeclarator variableDeclarator
    * @return {@link Comment} optional
    */
-  protected static final Optional<Comment> getFieldComment(final ClassOrInterfaceDeclaration rootClass,
+  protected static Optional<Comment> getFieldComment(final ClassOrInterfaceDeclaration rootClass,
           final FieldDeclaration field,
           final VariableDeclarator variableDeclarator)
   {

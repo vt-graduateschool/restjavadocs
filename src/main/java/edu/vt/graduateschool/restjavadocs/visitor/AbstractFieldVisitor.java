@@ -99,7 +99,7 @@ public abstract class AbstractFieldVisitor extends VoidVisitorAdapter<Class<? ex
    * @param variableDeclarator variableDeclarator
    * @return name of the field
    */
-  protected static final String getSimpleFieldName(final VariableDeclarator variableDeclarator)
+  protected static String getSimpleFieldName(final VariableDeclarator variableDeclarator)
   {
     return variableDeclarator.getNameAsString();
   }

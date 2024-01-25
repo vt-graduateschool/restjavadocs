@@ -33,7 +33,7 @@ public final class JacksonAwareFieldDescriptorFieldVisitor extends AbstractJacks
   /**
    * List of parsed field descriptors (null means unvisited).
    */
-  protected List<FieldDescriptor> fieldDescriptors;
+  private List<FieldDescriptor> fieldDescriptors;
 
   /**
    * Getter for fieldDescriptors.

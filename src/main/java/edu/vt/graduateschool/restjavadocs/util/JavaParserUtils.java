@@ -21,6 +21,7 @@ import com.github.javaparser.ast.expr.MemberValuePair;
 import com.github.javaparser.ast.type.Type;
 import com.github.javaparser.resolution.UnsolvedSymbolException;
 import com.github.javaparser.symbolsolver.JavaSymbolSolver;
+import com.github.javaparser.symbolsolver.resolution.typesolvers.ClassLoaderTypeSolver;
 import com.github.javaparser.symbolsolver.resolution.typesolvers.CombinedTypeSolver;
 import com.github.javaparser.symbolsolver.resolution.typesolvers.JavaParserTypeSolver;
 import com.github.javaparser.symbolsolver.resolution.typesolvers.ReflectionTypeSolver;
@@ -55,16 +56,48 @@ public final class JavaParserUtils
    */
   public static SourceRoot getResolvingSourceRoot(final String sourceRoot)
   {
+    return getResolvingSourceRoot(sourceRoot, JavaParserUtils.class.getClassLoader());
+  }
+
+  /**
+   * Returns a configured resolving compilation unit source root
+   *
+   * @param sourceRoot path to source
+   * @param classLoader class loader to solve from
+   * @return Configured {@link SourceRoot}
+   */
+  public static SourceRoot getResolvingSourceRoot(final String sourceRoot,
+          final ClassLoader classLoader)
+  {
     if (sourceRoot == null) {
       throw new IllegalArgumentException("sourceRoot cannot be null");
     }
-    final CombinedTypeSolver combinedTypeSolver = new CombinedTypeSolver(new ReflectionTypeSolver(),
+    final CombinedTypeSolver typeSolver = new CombinedTypeSolver(
+            new ClassLoaderTypeSolver(classLoader),
+            new ReflectionTypeSolver(),
             new JavaParserTypeSolver(sourceRoot));
+    final JavaSymbolSolver symbolSolver = new JavaSymbolSolver(typeSolver);
     final ParserConfiguration config = new ParserConfiguration()
             .setStoreTokens(true)
-            .setSymbolResolver(new JavaSymbolSolver(combinedTypeSolver));
-    final SourceRoot root = new SourceRoot(Paths.get(sourceRoot), config);
-    return root;
+            .setSymbolResolver(symbolSolver);
+    return new SourceRoot(Paths.get(sourceRoot), config);
+  }
+
+  /**
+   * Returns an annotation on a given type, null if not found.
+   *
+   * @param type type
+   * @param annotationClass annotation class
+   * @return {@link AnnotationExpr}
+   */
+  public static AnnotationExpr findAnnotation(final Type type, final Class annotationClass)
+  {
+    for (final AnnotationExpr annotation : type.getAnnotations()) {
+      if (annotation.getName().asString().equals(annotationClass.getName())) {
+        return annotation;
+      }
+    }
+    return null;
   }
 
   /**
@@ -226,6 +259,29 @@ public final class JavaParserUtils
   }
 
   /**
+   * Returns the list of {@link MemberValuePair} entries for a given annotation. Never null.
+   *
+   * @param annotationExpression {@link AnnotationExpr} to query for the value of
+   * @return {@link List}
+   */
+  public static List<MemberValuePair> getAnnotationValuePairs(final AnnotationExpr annotationExpression)
+  {
+    final List<MemberValuePair> memberValues = new ArrayList<>();
+    if ((annotationExpression.isNormalAnnotationExpr() || annotationExpression.isSingleMemberAnnotationExpr()) &&
+            !annotationExpression.isMarkerAnnotationExpr()) {
+      if (annotationExpression.isSingleMemberAnnotationExpr()) {
+        memberValues.add(new MemberValuePair(LangUtils.ANNOTATION_EXPRESSION_VALUE,
+                annotationExpression.asSingleMemberAnnotationExpr().getMemberValue()));
+      } else {
+        if (annotationExpression.isNormalAnnotationExpr()) {
+          memberValues.addAll(annotationExpression.asNormalAnnotationExpr().getPairs());
+        }
+      }
+    }
+    return memberValues;
+  }
+
+  /**
    * Returns the value expression of an annotation as a {@link String} literal, or null if none found.
    *
    * @param annotationExpression {@link AnnotationExpr} to query for the value
@@ -247,22 +303,12 @@ public final class JavaParserUtils
   public static String[] getAnnotationValues(final AnnotationExpr annotationExpression,
           final String expressionName)
   {
-    if ((annotationExpression.isNormalAnnotationExpr() || annotationExpression.isSingleMemberAnnotationExpr()) &&
-            !annotationExpression.isMarkerAnnotationExpr()) {
-      if (annotationExpression.isSingleMemberAnnotationExpr() && (expressionName == null ||
-              expressionName.equals(LangUtils.ANNOTATION_EXPRESSION_VALUE))) {
-        return collectExpressionValues(
-                annotationExpression.asSingleMemberAnnotationExpr().getMemberValue()).toArray(String[]::new);
-      } else {
-        if (annotationExpression.isNormalAnnotationExpr()) {
-          final String queryName = expressionName == null ? LangUtils.ANNOTATION_EXPRESSION_VALUE : expressionName;
-          for (MemberValuePair pair : annotationExpression.asNormalAnnotationExpr().getPairs()) {
-            final String name = pair.getName().asString();
-            if (queryName.equals(name)) {
-              return collectExpressionValues(pair.getValue()).toArray(String[]::new);
-            }
-          }
-        }
+    final String queryForName = expressionName == null ? LangUtils.ANNOTATION_EXPRESSION_VALUE : expressionName;
+    final List<MemberValuePair> memberValues = getAnnotationValuePairs(annotationExpression);
+    for (MemberValuePair pair : memberValues) {
+      final String name = pair.getName().asString();
+      if (name.equals(queryForName)) {
+        return collectExpressionValues(pair.getValue()).toArray(new String[0]);
       }
     }
     return null;
@@ -283,7 +329,7 @@ public final class JavaParserUtils
         if (("\"" + tag.getName().trim() + "\"").equals(tagName) &&
                 tag.getValues() != null && tag.getValues().size() > 1) {
           final String tagKey = tag.getValues().get(0);
-          final String[] tagValues = tag.getValues().subList(1, tag.getValues().size()).toArray(String[]::new);
+          final String[] tagValues = tag.getValues().subList(1, tag.getValues().size()).toArray(new String[0]);
           tagsMap.put(tagKey, tagValues);
         }
       }
@@ -415,7 +461,7 @@ public final class JavaParserUtils
    * @param resolvableType resolvableType
    * @return resolved or simple name
    */
-  private static String getResolvableTypeName(final Type resolvableType)
+  public static String getResolvableTypeName(final Type resolvableType)
   {
     String resolvedTypeDescription;
     try {

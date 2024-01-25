@@ -68,7 +68,7 @@ public abstract class AbstractMethodVisitor extends VoidVisitorAdapter<Class<? e
    * @param method {@link MethodDeclaration} instance
    * @return name of the method
    */
-  protected static final String getSimpleMethodName(final MethodDeclaration method)
+  protected static String getSimpleMethodName(final MethodDeclaration method)
   {
     return method.getNameAsString();
   }
