@@ -10,7 +10,7 @@
   <url>http://www.graduateschool.vt.edu/</url>
   <issueManagement>
     <system>GitLab</system>
-    <url>https://github.com/ememisya/restjavadocs/issues</url>
+    <url>https://github.com/vt-graduateschool/restjavadocs/issues</url>
   </issueManagement>
   <licenses>
     <license>
@@ -23,8 +23,8 @@
     </license>
   </licenses>
   <scm>
-    <connection>git@github.com:ememisya/restjavadocs.git</connection>
-    <url>https://github.com/ememisya/restjavadocs.git</url>
+    <connection>git@github.com:vt-graduateschool/restjavadocs.git</connection>
+    <url>https://github.com/vt-graduateschool/restjavadocs.git</url>
     <tag>HEAD</tag>
   </scm>
   <developers>
@@ -418,10 +418,13 @@
     </plugins>
   </build>
   <distributionManagement>
+    <snapshotRepository>
+      <id>ossrh</id>
+      <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
+    </snapshotRepository>
     <repository>
-      <id>github</id>
-      <name>GitHub Packages</name>
-      <url>https://maven.pkg.github.com/ememisya/restjavadocs</url>
+      <id>oss.sonatype</id>
+      <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
     </repository>
   </distributionManagement>  
   <profiles>
@@ -438,7 +441,13 @@
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-gpg-plugin</artifactId>
-            <version>1.6</version>
+            <version>3.0.1</version>
+            <configuration>
+              <gpgArguments>
+                <arg>--pinentry-mode</arg>
+                <arg>loopback</arg>
+              </gpgArguments>
+            </configuration>
             <executions>
               <execution>
                 <id>sign-artifacts</id>
@@ -448,6 +457,31 @@
                 </goals>
               </execution>
             </executions>
+          </plugin>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-release-plugin</artifactId>
+            <version>2.5.3</version>
+            <configuration>
+              <autoVersionSubmodules>true</autoVersionSubmodules>
+              <tagNameFormat>@{project.version}</tagNameFormat>
+              <pushChanges>false</pushChanges>
+              <localCheckout>true</localCheckout>
+              <remoteTagging>false</remoteTagging>
+              <arguments>-DskipTests=true</arguments>
+            </configuration>
+          </plugin>
+          <plugin>
+            <groupId>org.sonatype.plugins</groupId>
+            <artifactId>nexus-staging-maven-plugin</artifactId>
+            <version>1.6.13</version>
+            <extensions>true</extensions>
+            <configuration>
+              <nexusUrl>https://s01.oss.sonatype.org/</nexusUrl>
+              <serverId>ossrh</serverId>
+              <autoReleaseAfterClose>true</autoReleaseAfterClose>
+              <stagingProgressTimeoutMinutes>60</stagingProgressTimeoutMinutes>
+            </configuration>
           </plugin>
         </plugins>
       </build>
