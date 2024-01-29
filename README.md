@@ -13,10 +13,9 @@ v0.1 Features:
 * Generate response fields from Javadocs for non-enclosed classes
 * Generate request descriptors from a controller class' Javadocs where methods are annotated by Spring MVC annotations.
 
-[![Maven Package](https://github.com/ememisya/restjavadocs/actions/workflows/maven-publish.yml/badge.svg)](https://github.com/ememisya/restjavadocs/actions/workflows/maven-publish.yml)
 ![Coverage](.github/badges/jacoco.svg)
 
-Maven ([see packaging information for repository details](https://github.com/ememisya/restjavadocs/packages/1912864))
+Maven
 ```
 <dependency>
   <groupId>edu.vt.graduateschool</groupId>
