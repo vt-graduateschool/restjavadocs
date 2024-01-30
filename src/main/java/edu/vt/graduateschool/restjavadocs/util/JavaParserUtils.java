@@ -364,7 +364,6 @@ public final class JavaParserUtils
   public static boolean filterAnnotationExpression(final AnnotationExpr annotationExpression,
           final Map<String, String[]> filterMap)
   {
-    boolean matches = true;
     if (!(annotationExpression.isMarkerAnnotationExpr() || filterMap == null || filterMap.entrySet().isEmpty())) {
       final NodeList<MemberValuePair> annotationParameters =
               annotationExpression.asNormalAnnotationExpr().getPairs();
@@ -377,15 +376,19 @@ public final class JavaParserUtils
           if (filterMap.get(name) == null || Arrays.asList(filterMap.get(name)).contains(null)) {
             throw new IllegalArgumentException("annotation expression filter values cannot be null (JSR-308 D.3.3)");
           }
-          matches &= filterMap.entrySet().stream()
+          if (!filterMap.entrySet().stream()
                   .filter(x -> x.getKey().equals(name))
                   .anyMatch(x -> JavaParserUtils
-                  .collectExpressionValues(expression).containsAll(Arrays.asList(x.getValue())));
+                  .collectExpressionValues(expression).containsAll(Arrays.asList(x.getValue())))) {
+            return false;
+          }
         }
       }
-      matches &= keyMatch;
+      if (!keyMatch) {
+        return false;
+      }
     }
-    return matches;
+    return true;
   }
 
   /**
