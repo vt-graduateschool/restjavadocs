@@ -46,29 +46,26 @@ public final class RequestDocumentation
     if (filter == null) {
       return filterMap;
     }
-    if (filter.consumes() != null) {
-      filterMap.put(RequestMappingFilter.REQUEST_MAPPING_EXPRESSION_CONSUMES, filter.consumes());
+    if (filter.getConsumes() != null) {
+      filterMap.put(RequestMappingFilter.REQUEST_MAPPING_EXPRESSION_CONSUMES, filter.getConsumes());
     }
-    if (filter.headers() != null) {
-      filterMap.put(RequestMappingFilter.REQUEST_MAPPING_EXPRESSION_HEADERS, filter.headers());
+    if (filter.getHeaders() != null) {
+      filterMap.put(RequestMappingFilter.REQUEST_MAPPING_EXPRESSION_HEADERS, filter.getHeaders());
     }
-    if (filter.method() != null) {
-      filterMap.put(RequestMappingFilter.REQUEST_MAPPING_EXPRESSION_METHOD, filter.methodNames());
+    if (filter.getMethod() != null) {
+      filterMap.put(RequestMappingFilter.REQUEST_MAPPING_EXPRESSION_METHOD, filter.getMethod());
     }
-    if (filter.name() != null) {
-      filterMap.put(RequestMappingFilter.REQUEST_MAPPING_EXPRESSION_NAME, new String[]{filter.name()});
+    if (filter.getName() != null) {
+      filterMap.put(RequestMappingFilter.REQUEST_MAPPING_EXPRESSION_NAME, new String[]{filter.getName()});
     }
-    if (filter.params() != null) {
-      filterMap.put(RequestMappingFilter.REQUEST_MAPPING_EXPRESSION_PARAMS, filter.params());
+    if (filter.getParams() != null) {
+      filterMap.put(RequestMappingFilter.REQUEST_MAPPING_EXPRESSION_PARAMS, filter.getParams());
     }
-    if (filter.path() != null) {
-      filterMap.put(RequestMappingFilter.REQUEST_MAPPING_EXPRESSION_PATH, filter.path());
+    if (filter.getPath() != null) {
+      filterMap.put(RequestMappingFilter.REQUEST_MAPPING_EXPRESSION_PATH, filter.getPath());
     }
-    if (filter.produces() != null) {
-      filterMap.put(RequestMappingFilter.REQUEST_MAPPING_EXPRESSION_PRODUCES, filter.produces());
-    }
-    if (filter.value() != null) {
-      filterMap.put(LangUtils.ANNOTATION_EXPRESSION_VALUE, filter.value());
+    if (filter.getProduces() != null) {
+      filterMap.put(RequestMappingFilter.REQUEST_MAPPING_EXPRESSION_PRODUCES, filter.getProduces());
     }
     return filterMap;
   }

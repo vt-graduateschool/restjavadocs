@@ -1,14 +1,10 @@
 /* See LICENSE for licensing and NOTICE for copyright. */
 package edu.vt.graduateschool.restjavadocs.request;
 
-import java.lang.annotation.Annotation;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-
 /**
  * @author Graduate School
  */
-public final class RequestMappingFilter implements RequestMapping
+public final class RequestMappingFilter
 {
 
   /**
@@ -52,11 +48,6 @@ public final class RequestMappingFilter implements RequestMapping
   private String name;
 
   /**
-   * value attribute.
-   */
-  private String[] value;
-
-  /**
    * path attribute.
    */
   private String[] path;
@@ -64,7 +55,7 @@ public final class RequestMappingFilter implements RequestMapping
   /**
    * method attribute.
    */
-  private RequestMethod[] method;
+  private String[] method;
 
   /**
    * params attribute.
@@ -110,7 +101,6 @@ public final class RequestMappingFilter implements RequestMapping
    */
   public RequestMappingFilter(final String[] pathParam)
   {
-    this.value = pathParam;
     this.path = pathParam;
   }
 
@@ -123,18 +113,7 @@ public final class RequestMappingFilter implements RequestMapping
   public RequestMappingFilter(final String nameParam, final String[] pathParam)
   {
     this.name = nameParam;
-    this.value = pathParam;
     this.path = pathParam;
-  }
-
-  /**
-   * Constructor with values.
-   *
-   * @param methodParam method
-   */
-  public RequestMappingFilter(final RequestMethod[] methodParam)
-  {
-    this.method = methodParam;
   }
 
   /**
@@ -143,10 +122,9 @@ public final class RequestMappingFilter implements RequestMapping
    * @param pathParam path
    * @param methodParam method
    */
-  public RequestMappingFilter(final String[] pathParam, final RequestMethod[] methodParam)
+  public RequestMappingFilter(final String[] pathParam, final String[] methodParam)
   {
     this.path = pathParam;
-    this.value = pathParam;
     this.method = methodParam;
   }
 
@@ -157,11 +135,10 @@ public final class RequestMappingFilter implements RequestMapping
    * @param methodParam method
    * @param consumesParam consumes
    */
-  public RequestMappingFilter(final String[] pathParam, final RequestMethod[] methodParam,
+  public RequestMappingFilter(final String[] pathParam, final String[] methodParam,
           final String[] consumesParam)
   {
     this.path = pathParam;
-    this.value = pathParam;
     this.method = methodParam;
     this.consumes = consumesParam;
   }
@@ -169,32 +146,15 @@ public final class RequestMappingFilter implements RequestMapping
   /**
    * Constructor with values.
    *
-   * @param producesParam produces
-   * @param pathParam path
-   * @param methodParam method
-   */
-  public RequestMappingFilter(final String[] producesParam, final String[] pathParam,
-          final RequestMethod[] methodParam)
-  {
-    this.path = pathParam;
-    this.value = pathParam;
-    this.method = methodParam;
-    this.produces = producesParam;
-  }
-
-  /**
-   * Constructor with values.
-   *
    * @param pathParam path
    * @param methodParam method
    * @param consumesParam consumes
    * @param producesParam produces
    */
-  public RequestMappingFilter(final String[] pathParam, final RequestMethod[] methodParam,
+  public RequestMappingFilter(final String[] pathParam, final String[] methodParam,
           final String[] consumesParam, final String[] producesParam)
   {
     this.path = pathParam;
-    this.value = pathParam;
     this.method = methodParam;
     this.consumes = consumesParam;
     this.produces = producesParam;
@@ -209,11 +169,10 @@ public final class RequestMappingFilter implements RequestMapping
    * @param consumesParam consumes
    * @param producesParam produces
    */
-  public RequestMappingFilter(final String[] pathParam, final RequestMethod[] methodParam,
+  public RequestMappingFilter(final String[] pathParam, final String[] methodParam,
           final String[] headersParam, final String[] consumesParam, final String[] producesParam)
   {
     this.path = pathParam;
-    this.value = pathParam;
     this.method = methodParam;
     this.headers = headersParam;
     this.consumes = consumesParam;
@@ -230,11 +189,10 @@ public final class RequestMappingFilter implements RequestMapping
    * @param consumesParam consumes
    * @param producesParam produces
    */
-  public RequestMappingFilter(final String[] pathParam, final RequestMethod[] methodParam, final String[] paramsParam,
+  public RequestMappingFilter(final String[] pathParam, final String[] methodParam, final String[] paramsParam,
           final String[] headersParam, final String[] consumesParam, final String[] producesParam)
   {
     this.path = pathParam;
-    this.value = pathParam;
     this.method = methodParam;
     this.params = paramsParam;
     this.headers = headersParam;
@@ -253,13 +211,12 @@ public final class RequestMappingFilter implements RequestMapping
    * @param consumesParam consumes
    * @param producesParam produces
    */
-  public RequestMappingFilter(final String nameParam, final String[] pathParam, final RequestMethod[] methodParam,
+  public RequestMappingFilter(final String nameParam, final String[] pathParam, final String[] methodParam,
           final String[] paramsParam, final String[] headersParam, final String[] consumesParam,
           final String[] producesParam)
   {
     this.name = nameParam;
     this.path = pathParam;
-    this.value = pathParam;
     this.method = methodParam;
     this.params = paramsParam;
     this.headers = headersParam;
@@ -267,67 +224,82 @@ public final class RequestMappingFilter implements RequestMapping
     this.produces = producesParam;
   }
 
-  @Override
-  public String name()
+  /**
+   * Getter for name
+   *
+   * @return name
+   */
+  public String getName()
   {
     return this.name;
   }
 
-  @Override
-  public String[] value()
-  {
-    return this.value;
-  }
-
-  @Override
-  public String[] path()
+  /**
+   * Getter for value
+   *
+   * @return value
+   */
+  public String[] getValue()
   {
     return this.path;
   }
 
-  @Override
-  public RequestMethod[] method()
+  /**
+   * Getter for path
+   *
+   * @return path
+   */
+  public String[] getPath()
+  {
+    return this.path;
+  }
+
+  /**
+   * Getter for method
+   *
+   * @return method
+   */
+  public String[] getMethod()
   {
     return this.method;
   }
 
   /**
-   * Return method enum's names as an array
+   * Getter for params
    *
-   * @return String[] equivalent of {@link #method()}
+   * @return params
    */
-  public String[] methodNames()
-  {
-    if (this.method == null) {
-      return null;
-    }
-    final String[] methodNames = new String[this.method.length];
-    for (int i = 0; i < methodNames.length; i++) {
-      methodNames[i] = this.method[i].name();
-    }
-    return methodNames;
-  }
-
-  @Override
-  public String[] params()
+  public String[] getParams()
   {
     return this.params;
   }
 
-  @Override
-  public String[] headers()
+  /**
+   * Getter for headers
+   *
+   * @return headers
+   */
+  public String[] getHeaders()
   {
     return this.headers;
   }
 
-  @Override
-  public String[] consumes()
+  /**
+   * Getter for consumes
+   *
+   * @return consumes
+   */
+  public String[] getConsumes()
   {
     return this.consumes;
   }
 
-  @Override
-  public String[] produces()
+  /**
+   * Getter for produces
+   *
+   * @return produces
+   */
+  public String[] getProduces()
   {
     return this.produces;
   }
@@ -349,7 +321,6 @@ public final class RequestMappingFilter implements RequestMapping
    */
   public void setValue(final String[] valueParam)
   {
-    this.value = valueParam;
     this.path = valueParam;
   }
 
@@ -361,7 +332,6 @@ public final class RequestMappingFilter implements RequestMapping
   public void setPath(final String[] pathParam)
   {
     this.path = pathParam;
-    this.value = pathParam;
   }
 
   /**
@@ -369,7 +339,7 @@ public final class RequestMappingFilter implements RequestMapping
    *
    * @param methodParam method
    */
-  public void setMethod(final RequestMethod[] methodParam)
+  public void setMethod(final String[] methodParam)
   {
     this.method = methodParam;
   }
@@ -412,12 +382,6 @@ public final class RequestMappingFilter implements RequestMapping
   public void setProduces(final String[] producesParam)
   {
     this.produces = producesParam;
-  }
-
-  @Override
-  public Class<? extends Annotation> annotationType()
-  {
-    return RequestMapping.class;
   }
 
 }

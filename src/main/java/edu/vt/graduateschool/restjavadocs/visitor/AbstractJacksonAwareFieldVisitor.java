@@ -9,6 +9,7 @@ import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -75,7 +76,9 @@ public abstract class AbstractJacksonAwareFieldVisitor extends AbstractFieldVisi
           final Class<? extends Annotation> annotation)
   {
     return !field.isStatic() && !field.isPhantom() &&
-            !field.isAnnotationPresent(JsonIgnore.class) && super.filterFields(rootClass, field, annotation);
+            !field.isAnnotationPresent(JsonIgnore.class) &&
+            !field.isAnnotationPresent(JsonBackReference.class) &&
+            super.filterFields(rootClass, field, annotation);
   }
 
   /**
@@ -182,7 +185,8 @@ public abstract class AbstractJacksonAwareFieldVisitor extends AbstractFieldVisi
     if (!field.isAnnotationPresent(JsonProperty.class)) {
       final MethodDeclaration fieldGetter = findGetter(rootClass, variableDeclarator);
       if (fieldGetter != null) {
-        if (fieldGetter.getAnnotationByClass(JsonIgnore.class).isEmpty() &&
+        if ((fieldGetter.getAnnotationByClass(JsonIgnore.class).isEmpty() &&
+                fieldGetter.getAnnotationByClass(JsonBackReference.class).isEmpty()) &&
                 (fieldGetter.getAnnotationByClass(JsonProperty.class).isPresent() ||
                 fieldGetter.getAnnotationByClass(JsonGetter.class).isPresent() ||
                 fieldGetter.getAnnotationByClass(JsonAnyGetter.class).isPresent())) {

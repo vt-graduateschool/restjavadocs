@@ -1,8 +1,6 @@
 /* See LICENSE for licensing and NOTICE for copyright. */
 package edu.vt.graduateschool.restjavadocs.request;
 
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -23,22 +21,19 @@ public class RequestMappingFilterTest
   {
     final String nameParam = "nameParam";
     final String[] pathParam = new String[]{"pathParam"};
-    final RequestMethod[] methodParam = new RequestMethod[]{RequestMethod.GET};
+    final String[] methodParam = new String[]{"RequestMethod.GET"};
     final String[] paramsParam = new String[]{"paramsParam"};
     final String[] headersParam = new String[]{"headersParam"};
     final String[] consumesParam = new String[]{"consumesParam"};
     final String[] producesParam = new String[]{"producesParam"};
 
     final RequestMappingFilter one = new RequestMappingFilter();
-    final RequestMappingFilter two = new RequestMappingFilter(methodParam);
     final RequestMappingFilter three = new RequestMappingFilter("nameParam");
     final RequestMappingFilter four = new RequestMappingFilter(pathParam);
     final RequestMappingFilter five = new RequestMappingFilter("nameParam", pathParam);
     final RequestMappingFilter six = new RequestMappingFilter(pathParam, methodParam);
     final RequestMappingFilter seven = new RequestMappingFilter(pathParam, methodParam,
             consumesParam);
-    final RequestMappingFilter eight = new RequestMappingFilter(producesParam, pathParam,
-            methodParam);
     final RequestMappingFilter nine = new RequestMappingFilter(pathParam, methodParam, consumesParam, producesParam);
     final RequestMappingFilter ten =
             new RequestMappingFilter(pathParam, methodParam, headersParam, consumesParam, producesParam);
@@ -47,29 +42,27 @@ public class RequestMappingFilterTest
     final RequestMappingFilter twelve =
             new RequestMappingFilter(nameParam, pathParam, methodParam, paramsParam, headersParam, consumesParam,
                     producesParam);
-    Assert.assertEquals(one.value(), one.path());
-    Assert.assertEquals(two.value(), two.path());
-    Assert.assertEquals(three.value(), three.path());
-    Assert.assertEquals(four.value(), four.path());
-    Assert.assertEquals(five.value(), five.path());
-    Assert.assertEquals(six.value(), six.path());
-    Assert.assertEquals(seven.value(), seven.path());
-    Assert.assertEquals(eight.value(), eight.path());
-    Assert.assertEquals(nine.value(), nine.path());
-    Assert.assertEquals(ten.value(), ten.path());
-    Assert.assertEquals(eleven.value(), eleven.path());
-    Assert.assertEquals(twelve.value(), twelve.path());
+    Assert.assertEquals(one.getValue(), one.getPath());
+    Assert.assertEquals(three.getValue(), three.getPath());
+    Assert.assertEquals(four.getValue(), four.getPath());
+    Assert.assertEquals(five.getValue(), five.getPath());
+    Assert.assertEquals(six.getValue(), six.getPath());
+    Assert.assertEquals(seven.getValue(), seven.getPath());
+    Assert.assertEquals(nine.getValue(), nine.getPath());
+    Assert.assertEquals(ten.getValue(), ten.getPath());
+    Assert.assertEquals(eleven.getValue(), eleven.getPath());
+    Assert.assertEquals(twelve.getValue(), twelve.getPath());
   }
 
   /**
    * Test of name method, of class RequestMappingFilter.
    */
   @Test
-  public void test_01_name()
+  public void test_01_get_name()
   {
     final RequestMappingFilter instance = new RequestMappingFilter("name");
     final String expResult = "name";
-    final String result = instance.name();
+    final String result = instance.getName();
     Assert.assertEquals(expResult, result);
   }
 
@@ -77,11 +70,11 @@ public class RequestMappingFilterTest
    * Test of value method, of class RequestMappingFilter.
    */
   @Test
-  public void test_02_value()
+  public void test_02_get_value()
   {
     final String[] expResult = new String[]{"value"};
     final RequestMappingFilter instance = new RequestMappingFilter(expResult);
-    final String[] result = instance.value();
+    final String[] result = instance.getValue();
     assertArrayEquals(expResult, result);
   }
 
@@ -89,11 +82,11 @@ public class RequestMappingFilterTest
    * Test of path method, of class RequestMappingFilter.
    */
   @Test
-  public void test_03_path()
+  public void test_03_get_path()
   {
     final String[] expResult = new String[]{"path"};
     final RequestMappingFilter instance = new RequestMappingFilter(expResult);
-    final String[] result = instance.path();
+    final String[] result = instance.getPath();
     assertArrayEquals(expResult, result);
   }
 
@@ -101,38 +94,25 @@ public class RequestMappingFilterTest
    * Test of method method, of class RequestMappingFilter.
    */
   @Test
-  public void test_04_method()
+  public void test_04_get_method()
   {
-    final RequestMethod[] expResult = new RequestMethod[]{RequestMethod.GET};
-    final RequestMappingFilter instance = new RequestMappingFilter(expResult);
-    final RequestMethod[] result = instance.method();
+    final String[] expResult = new String[]{"RequestMethod.GET"};
+    final RequestMappingFilter instance = new RequestMappingFilter();
+    instance.setMethod(expResult);
+    final String[] result = instance.getMethod();
     assertArrayEquals(expResult, result);
-  }
-
-  /**
-   * Test of methodNames method, of class RequestMappingFilter.
-   */
-  @Test
-  public void test_05_method_names()
-  {
-    final String[] expResultValues = new String[]{RequestMethod.GET.name()};
-    final RequestMappingFilter instance = new RequestMappingFilter(new RequestMethod[]{RequestMethod.GET});
-    final String[] result = instance.methodNames();
-    assertArrayEquals(expResultValues, result);
-    instance.setMethod(null);
-    Assert.assertEquals(instance.methodNames(), null);
   }
 
   /**
    * Test of params method, of class RequestMappingFilter.
    */
   @Test
-  public void test_06_params()
+  public void test_05_get_params()
   {
     final String[] expResult = new String[]{"params"};
     final RequestMappingFilter instance = new RequestMappingFilter();
     instance.setParams(expResult);
-    final String[] result = instance.params();
+    final String[] result = instance.getParams();
     assertArrayEquals(expResult, result);
   }
 
@@ -140,12 +120,12 @@ public class RequestMappingFilterTest
    * Test of headers method, of class RequestMappingFilter.
    */
   @Test
-  public void test_07_headers()
+  public void test_06_get_headers()
   {
     final String[] expResult = new String[]{"headers"};
     final RequestMappingFilter instance = new RequestMappingFilter();
     instance.setHeaders(expResult);
-    final String[] result = instance.headers();
+    final String[] result = instance.getHeaders();
     assertArrayEquals(expResult, result);
   }
 
@@ -153,12 +133,12 @@ public class RequestMappingFilterTest
    * Test of consumes method, of class RequestMappingFilter.
    */
   @Test
-  public void test_08_consumes()
+  public void test_07_get_consumes()
   {
     final String[] expResult = new String[]{"consumes"};
     final RequestMappingFilter instance = new RequestMappingFilter();
     instance.setConsumes(expResult);
-    final String[] result = instance.consumes();
+    final String[] result = instance.getConsumes();
     assertArrayEquals(expResult, result);
   }
 
@@ -166,12 +146,12 @@ public class RequestMappingFilterTest
    * Test of produces method, of class RequestMappingFilter.
    */
   @Test
-  public void test_09_produces()
+  public void test_08_get_produces()
   {
     final String[] expResult = new String[]{"produces"};
     final RequestMappingFilter instance = new RequestMappingFilter();
     instance.setProduces(expResult);
-    final String[] result = instance.produces();
+    final String[] result = instance.getProduces();
     assertArrayEquals(expResult, result);
   }
 
@@ -179,106 +159,84 @@ public class RequestMappingFilterTest
    * Test of setName method, of class RequestMappingFilter.
    */
   @Test
-  public void test_10_set_name()
+  public void test_09_set_name()
   {
     final String nameParam = "setName";
     final RequestMappingFilter instance = new RequestMappingFilter();
     instance.setName(nameParam);
-    Assert.assertEquals(nameParam, instance.name());
+    Assert.assertEquals(nameParam, instance.getName());
   }
 
   /**
    * Test of setValue method, of class RequestMappingFilter.
    */
   @Test
-  public void test_11_set_value()
+  public void test_10_set_value()
   {
     final String[] valueParam = new String[]{"value"};
     final RequestMappingFilter instance = new RequestMappingFilter();
     instance.setValue(valueParam);
-    assertArrayEquals(valueParam, instance.value());
+    assertArrayEquals(valueParam, instance.getValue());
   }
 
   /**
    * Test of setPath method, of class RequestMappingFilter.
    */
   @Test
-  public void test_12_set_path()
+  public void test_11_set_path()
   {
     final String[] pathParam = new String[]{"path"};
     final RequestMappingFilter instance = new RequestMappingFilter();
     instance.setPath(pathParam);
-    assertArrayEquals(pathParam, instance.path());
-  }
-
-  /**
-   * Test of setMethod method, of class RequestMappingFilter.
-   */
-  @Test
-  public void test_13_set_method()
-  {
-    final String[] methodParam = new String[]{"GET"};
-    final RequestMappingFilter instance = new RequestMappingFilter();
-    instance.setMethod(new RequestMethod[]{RequestMethod.GET});
-    assertArrayEquals(methodParam, instance.methodNames());
+    assertArrayEquals(pathParam, instance.getPath());
   }
 
   /**
    * Test of setParams method, of class RequestMappingFilter.
    */
   @Test
-  public void test_14_set_params()
+  public void test_12_set_params()
   {
     final String[] paramsParam = new String[]{"params"};
     final RequestMappingFilter instance = new RequestMappingFilter();
     instance.setParams(paramsParam);
-    assertArrayEquals(paramsParam, instance.params());
+    assertArrayEquals(paramsParam, instance.getParams());
   }
 
   /**
    * Test of setHeaders method, of class RequestMappingFilter.
    */
   @Test
-  public void test_15_set_headers()
+  public void test_13_set_headers()
   {
     final String[] headersParam = new String[]{"headers"};
     final RequestMappingFilter instance = new RequestMappingFilter();
     instance.setHeaders(headersParam);
-    assertArrayEquals(headersParam, instance.headers());
+    assertArrayEquals(headersParam, instance.getHeaders());
   }
 
   /**
    * Test of setConsumes method, of class RequestMappingFilter.
    */
   @Test
-  public void test_16_set_consumes()
+  public void test_14_set_consumes()
   {
     final String[] consumesParam = new String[]{"consumes"};
     final RequestMappingFilter instance = new RequestMappingFilter();
     instance.setConsumes(consumesParam);
-    assertArrayEquals(consumesParam, instance.consumes());
+    assertArrayEquals(consumesParam, instance.getConsumes());
   }
 
   /**
    * Test of setProduces method, of class RequestMappingFilter.
    */
   @Test
-  public void test_17_set_produces()
+  public void test_15_set_produces()
   {
     final String[] producesParam = new String[]{"produces"};
     final RequestMappingFilter instance = new RequestMappingFilter();
     instance.setProduces(producesParam);
-    assertArrayEquals(producesParam, instance.produces());
-  }
-
-  /**
-   * Test of annotationType method, of class RequestMappingFilter.
-   */
-  @Test
-  public void test_18_annotation_type()
-  {
-    final RequestMappingFilter instance = new RequestMappingFilter();
-    Assert.assertEquals(RequestMapping.class, instance.annotationType());
+    assertArrayEquals(producesParam, instance.getProduces());
   }
 
   //CheckStyle:MethodName ON

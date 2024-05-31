@@ -16,9 +16,12 @@ import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.body.VariableDeclarator;
 import com.github.javaparser.ast.comments.Comment;
 import com.github.javaparser.ast.expr.AnnotationExpr;
+import com.github.javaparser.ast.expr.BinaryExpr;
 import com.github.javaparser.ast.expr.Expression;
+import com.github.javaparser.ast.expr.FieldAccessExpr;
 import com.github.javaparser.ast.expr.MemberValuePair;
 import com.github.javaparser.ast.type.Type;
+import com.github.javaparser.printer.configuration.DefaultPrinterConfiguration;
 import com.github.javaparser.resolution.UnsolvedSymbolException;
 import com.github.javaparser.symbolsolver.JavaSymbolSolver;
 import com.github.javaparser.symbolsolver.resolution.typesolvers.ClassLoaderTypeSolver;
@@ -189,7 +192,8 @@ public final class JavaParserUtils
 
   /**
    * Returns the {@link String} literal representation of annotation {@link MemberValuePair}. Null values are returned
-   * as nulls, if an expression type cannot be determined empty string is returned.
+   * as nulls, if an expression type cannot be determined empty string is returned. Constant expressions are not
+   * evaluated but rather converted to string literals as defined (i.e. Long.MAX_VALUE == 'Long.MAX_VALUE').
    *
    * @param value value expression
    * @return literal string value, an empty string is returned if no type match is found.
@@ -201,13 +205,25 @@ public final class JavaParserUtils
     }
     final String stringValue;
     if (value.isFieldAccessExpr()) {
-      stringValue = value.asFieldAccessExpr().getNameAsString();
+      final StringBuilder sb = new StringBuilder();
+      final FieldAccessExpr fieldAccessExpr = value.asFieldAccessExpr();
+      if (fieldAccessExpr.getScope() != null) {
+        sb.append(getStringLiteral(fieldAccessExpr.getScope()));
+        sb.append('.');
+      }
+      stringValue = sb.append(fieldAccessExpr.getNameAsString()).toString();
     } else if (value.isStringLiteralExpr()) {
       stringValue = value.asStringLiteralExpr().getValue();
     } else if (value.isBooleanLiteralExpr()) {
       stringValue = value.asBooleanLiteralExpr().toString();
+    } else if (value.isCharLiteralExpr()) {
+      stringValue = value.asCharLiteralExpr().getValue();
+    } else if (value.isLiteralExpr()) {
+      stringValue = value.asLiteralExpr().toString();
+    } else if (value.isBinaryExpr()) {
+      stringValue = evaluateBinaryExpr(value.asBinaryExpr());
     } else {
-      stringValue = "";
+      stringValue = value.toString(new DefaultPrinterConfiguration());
     }
     return stringValue;
   }
@@ -367,25 +383,19 @@ public final class JavaParserUtils
     if (!(annotationExpression.isMarkerAnnotationExpr() || filterMap == null || filterMap.entrySet().isEmpty())) {
       final NodeList<MemberValuePair> annotationParameters =
               annotationExpression.asNormalAnnotationExpr().getPairs();
-      boolean keyMatch = false;
-      for (final MemberValuePair pair : annotationParameters) {
-        final String name = pair.getName().asString();
-        final Expression expression = pair.getValue();
-        if (filterMap.keySet().contains(name)) {
-          keyMatch = true;
-          if (filterMap.get(name) == null || Arrays.asList(filterMap.get(name)).contains(null)) {
-            throw new IllegalArgumentException("annotation expression filter values cannot be null (JSR-308 D.3.3)");
-          }
-          if (!filterMap.entrySet().stream()
-                  .filter(x -> x.getKey().equals(name))
-                  .anyMatch(x -> JavaParserUtils
-                  .collectExpressionValues(expression).containsAll(Arrays.asList(x.getValue())))) {
-            return false;
-          }
+      final Map<String, String[]> annotationMap = convertRequestMappingAnnotationValues(annotationParameters);
+      for (final String filterKey : filterMap.keySet()) {
+        if (!annotationMap.keySet().contains(filterKey)) {
+          return false;
         }
-      }
-      if (!keyMatch) {
-        return false;
+        final List<String> annotationValues = Arrays.asList(annotationMap.getOrDefault(filterKey, new String[0]));
+        final List<String> filterValues = Arrays.asList(filterMap.getOrDefault(filterKey, new String[0]));
+        if (filterValues.contains(null) || annotationValues.contains(null)) {
+          throw new IllegalArgumentException("annotation expression values cannot be null (JSR-308 D.3.3)");
+        }
+        if (!annotationValues.containsAll(filterValues)) {
+          return false;
+        }
       }
     }
     return true;
@@ -473,6 +483,67 @@ public final class JavaParserUtils
       resolvedTypeDescription = e.getName();
     }
     return resolvedTypeDescription;
+  }
+
+  /**
+   * Evaluates a constant expression that may reside as annotation expression values.
+   *
+   * @param expression {@link BinaryExpr}
+   * @return Evaluated string literal
+   */
+  private static String evaluateBinaryExpr(final BinaryExpr expression)
+  {
+    final StringBuilder sb = new StringBuilder();
+    if (expression.getOperator().equals(BinaryExpr.Operator.PLUS)) {
+      sb.append(evaluateBinaryExpr(expression.getLeft()));
+      sb.append(evaluateBinaryExpr(expression.getRight()));
+    } else {
+      throw new UnsupportedOperationException("Cannot evaluate BinaryExpr other than PLUS operation");
+    }
+    return sb.toString();
+  }
+
+  /**
+   * Evaluates a constant expression that may reside as annotation expression values.
+   *
+   * @param expression {@link Expression}
+   * @return Evaluated string literal
+   */
+  private static String evaluateBinaryExpr(final Expression expression)
+  {
+    if (expression.isBinaryExpr()) {
+      return evaluateBinaryExpr(expression.asBinaryExpr());
+    } else {
+      return getStringLiteral(expression);
+    }
+  }
+
+  /**
+   * Converts a given {@link NodeList}&lt;{@link MemberValuePair}&gt; to a map.
+   *
+   * @param annotationParameters annotationParameters
+   * @return Converted map, never null
+   */
+  private static Map<String, String[]> convertRequestMappingAnnotationValues(
+          final NodeList<MemberValuePair> annotationParameters)
+  {
+    final Map<String, String[]> annotationMap = new HashMap<>();
+    for (final MemberValuePair pair : annotationParameters) {
+      final String name = pair.getName().asString();
+      final Expression expression = pair.getValue();
+      final List<String> values = JavaParserUtils
+              .collectExpressionValues(expression);
+      annotationMap.put(name, values.toArray(String[]::new));
+      //@TODO better to parse Spring's @AliasFor annotation in the future
+      //fortunately the following applies to all mapping annotations
+      if ("path".equals(name)) {
+        annotationMap.put("value", values.toArray(String[]::new));
+      }
+      if ("value".equals(name)) {
+        annotationMap.put("path", values.toArray(String[]::new));
+      }
+    }
+    return annotationMap;
   }
 
 }

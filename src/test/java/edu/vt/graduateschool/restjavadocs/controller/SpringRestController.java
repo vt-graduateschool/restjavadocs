@@ -105,6 +105,22 @@ public class SpringRestController
     return RESPONSE;
   }
 
+  /**
+   * stringEndpointWithFieldExpressionParams
+   *
+   * @param stringEndpointWithFieldExpressionParam description for stringEndpointWithFieldExpressionParam
+   * @return {@link #RESPONSE}
+   */
+  @RequestMapping(name = "all",
+          value = "/stringEndpointWithFieldExpressionParams" + java.lang.Long.MAX_VALUE + '/' +
+          RESPONSE + '/' + true + 1.1 + 3,
+          method = RequestMethod.GET)
+  public String stringEndpointWithFieldExpressionParams(
+          @RequestParam final String stringEndpointWithFieldExpressionParam)
+  {
+    return RESPONSE;
+  }
+
   //CheckStyle:JavadocMethod OFF
   /**
    * endpointWithOptionalTypeNoGeneric

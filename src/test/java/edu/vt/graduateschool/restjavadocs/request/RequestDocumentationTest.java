@@ -9,7 +9,6 @@ import edu.vt.graduateschool.restjavadocs.controller.VerySimpleRestController;
 import edu.vt.graduateschool.restjavadocs.util.LangUtils;
 import org.json.JSONException;
 import org.springframework.restdocs.request.ParameterDescriptor;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -20,6 +19,7 @@ import org.testng.annotations.Test;
  */
 public class RequestDocumentationTest
 {
+
   //CheckStyle:MethodName OFF
   /**
    * Test 00
@@ -65,7 +65,7 @@ public class RequestDocumentationTest
   {
     final ParameterDescriptor[] descriptors =
             RequestDocumentation.descriptors(LangUtils.JAVA_SOURCE_TEST_PATH,
-                    SpringRestController.class, "{method:'GET',path:'/stringEndpointNoParams'}");
+                    SpringRestController.class, "{method:'RequestMethod.GET',path:'/stringEndpointNoParams'}");
     Assert.assertEquals(descriptors.length, 0);
   }
 
@@ -89,13 +89,13 @@ public class RequestDocumentationTest
   @Test
   public void test_05_string_endpoint_non_required_params_by_request_mapping_filter()
   {
+    final RequestMappingFilter filter = new RequestMappingFilter();
+    filter.setProduces(new String[]{"text/plain"});
+    filter.setMethod(new String[]{"RequestMethod.GET"});
+    filter.setPath(new String[]{"/stringEndpointNonRequiredParams"});
     final ParameterDescriptor[] descriptors =
             RequestDocumentation.descriptors(LangUtils.JAVA_SOURCE_TEST_PATH,
-                    SpringRestController.class, new RequestMappingFilter(
-                            new String[]{"text/plain"},
-                            new String[]{"/stringEndpointNonRequiredParams"},
-                            new RequestMethod[]{RequestMethod.GET}
-                    ));
+                    SpringRestController.class, filter);
     Assert.assertEquals(descriptors.length, 2);
     Assert.assertEquals(descriptors[0].isOptional(), true);
     Assert.assertEquals(descriptors[1].isOptional(), true);
@@ -108,7 +108,7 @@ public class RequestDocumentationTest
   public void test_06_string_endpoint_non_required_params_by_map()
   {
     final Map<String, String[]> filterMap = new HashMap<>();
-    filterMap.put(RequestMappingFilter.REQUEST_MAPPING_EXPRESSION_METHOD, new String[]{"GET"});
+    filterMap.put(RequestMappingFilter.REQUEST_MAPPING_EXPRESSION_METHOD, new String[]{"RequestMethod.GET"});
     filterMap.put(RequestMappingFilter.REQUEST_MAPPING_EXPRESSION_PATH,
             new String[]{"/stringEndpointNonRequiredParams"});
     filterMap.put(RequestMappingFilter.REQUEST_MAPPING_EXPRESSION_PRODUCES, new String[]{"text/plain"});
@@ -181,7 +181,7 @@ public class RequestDocumentationTest
     final RequestMappingFilter filter = new RequestMappingFilter(
             "all",
             new String[]{"/stringEndpointWithParams"},
-            new RequestMethod[]{RequestMethod.GET}, new String[]{"match=one"},
+            new String[]{"RequestMethod.GET"}, new String[]{"match=one"},
             new String[]{"content-type=text/*"},
             new String[]{"application/*"},
             new String[]{"text/plain"});
@@ -198,6 +198,26 @@ public class RequestDocumentationTest
     Assert.assertEquals(descriptors[0].isOptional(), false);
     Assert.assertEquals(descriptors[1].isOptional(), true);
     Assert.assertEquals(descriptors[2].isOptional(), true);
+  }
+
+  /**
+   * Test 10.1
+   */
+  @Test
+  public void test_10_1_string_endpoint_with_params_by_request_filter_using_all_with_field_expressions()
+  {
+    final String path = "/stringEndpointWithFieldExpressionParams" +
+            "java.lang.Long.MAX_VALUE" + '/' + "RESPONSE" + '/' + "true" + "1.1" + "3";
+    final RequestMappingFilter filter = new RequestMappingFilter(
+            new String[]{path}, new String[]{"RequestMethod.GET"});
+    final ParameterDescriptor[] descriptors =
+            RequestDocumentation.descriptors(LangUtils.JAVA_SOURCE_TEST_PATH,
+                    SpringRestController.class, filter);
+    Assert.assertEquals(descriptors.length, 1);
+    Assert.assertEquals(descriptors[0].getName(), "stringEndpointWithFieldExpressionParam");
+    Assert.assertEquals(descriptors[0].getDescription().toString().trim(),
+            "description for stringEndpointWithFieldExpressionParam");
+    Assert.assertEquals(descriptors[0].isOptional(), false);
   }
 
   /**
@@ -274,7 +294,7 @@ public class RequestDocumentationTest
   {
     final ParameterDescriptor[] descriptors =
             RequestDocumentation.descriptors(LangUtils.class,
-                    "{method: ['GET', 'PUT'], notathing: 'YES'}");
+                    "{method: ['RequestMethod.GET', 'RequestMethod.PUT'], path:'/stringEndpointNonRequiredParams'}");
     Assert.assertEquals(descriptors.length, 0);
   }
 
@@ -287,7 +307,7 @@ public class RequestDocumentationTest
     final ParameterDescriptor[] descriptors =
             RequestDocumentation.descriptors(LangUtils.JAVA_SOURCE_TEST_PATH,
                     SpringRestController.class,
-                    "{validbutnotexistent:'text/plain',path:'/stringEndpointNonRequiredParams'}");
+                    "{method: ['RequestMethod.GET'], path:'/stringEndpointNonRequiredParams'}");
     Assert.assertEquals(descriptors.length, 2);
     Assert.assertEquals(descriptors[0].isOptional(), true);
     Assert.assertEquals(descriptors[1].isOptional(), true);
@@ -313,7 +333,7 @@ public class RequestDocumentationTest
     final Map<String, String[]> filterMapFromNull = RequestDocumentation.filterToMap(null);
     final Map<String, String[]> filterMap =
             RequestDocumentation.filterToMap(new RequestMappingFilter(new String[]{"/path"}));
-    Assert.assertEquals(filterMap.keySet().size(), 2);
+    Assert.assertEquals(filterMap.keySet().size(), 1);
     Assert.assertEquals(filterMapFromNull.isEmpty(), true);
   }
   //CheckStyle:MethodName ON
