@@ -92,7 +92,7 @@ public class EdPerson implements Serializable
             .andExpect(status().isOk())
             .andDo(document("get/students/directory-information",
                     relaxedRequestParameters(descriptors(StudentInfoController.class,
-                                    "{value: '/directory-information', method: 'GET'}")
+                                    "{value: '/directory-information', method: 'RequestMethod.GET'}")
                     ),
                     relaxedResponseFields(fields("../core/src/main/java/", EdPerson.class))));
 ```
