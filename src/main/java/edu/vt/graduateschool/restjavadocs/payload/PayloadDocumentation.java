@@ -8,9 +8,9 @@ import edu.vt.graduateschool.restjavadocs.util.LangUtils;
 import edu.vt.graduateschool.restjavadocs.visitor.JacksonAwareFieldDescriptorFieldVisitor;
 import org.springframework.restdocs.payload.FieldDescriptor;
 
+import static edu.vt.graduateschool.restjavadocs.util.JavaParserUtils.getFilePathFromClass;
 import static edu.vt.graduateschool.restjavadocs.util.JavaParserUtils.getResolvingSourceRoot;
 import static edu.vt.graduateschool.restjavadocs.util.LangUtils.JAVA_SOURCE_MAIN_PATH;
-import static edu.vt.graduateschool.restjavadocs.util.LangUtils.getFilePathFromClass;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.subsectionWithPath;
 
@@ -39,7 +39,7 @@ public final class PayloadDocumentation
   public static FieldDescriptor[] paginatedFields(final Class beanClass)
           throws ParseProblemException
   {
-    return paginatedFields(null, beanClass, null);
+    return paginatedFields((String) null, beanClass, null);
   }
 
   /**
@@ -75,7 +75,7 @@ public final class PayloadDocumentation
           final Class<? extends Annotation> annotated)
           throws ParseProblemException
   {
-    return paginatedFields(null, beanClass, annotated);
+    return paginatedFields((String) null, beanClass, annotated);
   }
 
   /**
@@ -93,6 +93,28 @@ public final class PayloadDocumentation
    * be parsed
    */
   public static FieldDescriptor[] paginatedFields(final String sourceRoot,
+          final Class beanClass, final Class<? extends Annotation> annotated)
+          throws ParseProblemException
+  {
+    final String sourcesBasePath = sourceRoot == null ? JAVA_SOURCE_MAIN_PATH : sourceRoot;
+    return paginatedFields(getResolvingSourceRoot(sourcesBasePath), beanClass, annotated);
+  }
+
+  /**
+   * Returns {@link FieldDescriptor}[] from a given java class source by using field's Javadocs with basic Spring
+   * pagination fields appended.
+   *
+   * @param sourceRoot base path of the sources folder (if null
+   * <a href="https://maven.apache.org/guides/introduction/introduction-to-the-standard-directory-layout.html">
+   * "./src/main/java/"</a> is used)
+   * @param beanClass beanClass
+   * @param annotated specified annotation on fields
+   * @see #fields(java.lang.String, java.lang.Class, java.lang.Class)
+   * @return {@link FieldDescriptor}[]
+   * @throws com.github.javaparser.ParseProblemException {@link ParseProblemException} is thrown if the source could not
+   * be parsed
+   */
+  public static FieldDescriptor[] paginatedFields(final SourceRoot sourceRoot,
           final Class beanClass, final Class<? extends Annotation> annotated)
           throws ParseProblemException
   {
@@ -149,7 +171,7 @@ public final class PayloadDocumentation
   public static FieldDescriptor[] fields(final Class beanClass)
           throws ParseProblemException
   {
-    return fields(null, beanClass, null);
+    return fields((String) null, beanClass, null);
   }
 
   /**
@@ -183,7 +205,25 @@ public final class PayloadDocumentation
   public static FieldDescriptor[] fields(final Class beanClass, final Class<? extends Annotation> annotated)
           throws ParseProblemException
   {
-    return fields(null, beanClass, annotated);
+    return fields((String) null, beanClass, annotated);
+  }
+
+  /**
+   * Returns {@link FieldDescriptor}[] from a given java class source by using field's Javadocs.
+   *
+   * @param sourceRoot source root
+   * @param beanClass The class of the bean that contains JacksonAnnotation fields
+   * @param annotated specified annotation on fields
+   * @see edu.vt.graduateschool.restjavadocs.util.LangUtils
+   * @return Generated descriptors from Javadocs
+   * @throws com.github.javaparser.ParseProblemException {@link ParseProblemException} is thrown if the source could not
+   * be parsed
+   */
+  public static FieldDescriptor[] fields(final SourceRoot sourceRoot, final Class beanClass,
+          final Class<? extends Annotation> annotated)
+          throws ParseProblemException
+  {
+    return fields(sourceRoot, getFilePathFromClass(beanClass), annotated);
   }
 
   /**
@@ -204,8 +244,7 @@ public final class PayloadDocumentation
           throws ParseProblemException
   {
     final String sourcesBasePath = sourceRoot == null ? JAVA_SOURCE_MAIN_PATH : sourceRoot;
-    final String classFilePath = getFilePathFromClass(beanClass);
-    return fields(sourcesBasePath, classFilePath, annotated);
+    return fields(sourcesBasePath, getFilePathFromClass(beanClass), annotated);
   }
 
   /**
@@ -222,9 +261,25 @@ public final class PayloadDocumentation
           final Class<? extends Annotation> annotated)
           throws ParseProblemException
   {
-    final SourceRoot root = getResolvingSourceRoot(sourceRoot);
+    return fields(getResolvingSourceRoot(sourceRoot), sourceFile, annotated);
+  }
+
+  /**
+   * Returns {@link FieldDescriptor}[] from a given java class source by using field's Javadocs.
+   *
+   * @param sourceRoot source root
+   * @param sourceFile path to the .java file
+   * @param annotated specified annotation on fields
+   * @return Generated descriptors from Javadocs
+   * @throws com.github.javaparser.ParseProblemException {@link ParseProblemException} is thrown if the source could not
+   * be parsed
+   */
+  private static FieldDescriptor[] fields(final SourceRoot sourceRoot, final String sourceFile,
+          final Class<? extends Annotation> annotated)
+          throws ParseProblemException
+  {
     final JacksonAwareFieldDescriptorFieldVisitor visitor = new JacksonAwareFieldDescriptorFieldVisitor();
-    visitor.visit(root.parse("", sourceFile), annotated);
+    visitor.visit(sourceRoot.parse("", sourceFile), annotated);
     return visitor.getFieldDescriptors().toArray(FieldDescriptor[]::new);
   }
 

@@ -5,11 +5,15 @@ import java.util.Arrays;
 import java.util.stream.Collectors;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.github.javaparser.ParseProblemException;
+import com.github.javaparser.ParserConfiguration;
+import com.github.javaparser.utils.SourceRoot;
 import edu.vt.graduateschool.restjavadocs.beans.JacksonPOJO;
 import edu.vt.graduateschool.restjavadocs.util.LangUtils;
 import org.springframework.restdocs.payload.FieldDescriptor;
 import org.testng.Assert;
 import org.testng.annotations.Test;
+
+import static edu.vt.graduateschool.restjavadocs.util.JavaParserUtils.getResolvingSourceRoot;
 
 /**
  * Tests {@link PayloadDocumentation} methods.
@@ -156,6 +160,33 @@ public class PayloadDocumentationTest
   {
     final FieldDescriptor[] descriptors = PayloadDocumentation.paginatedFields(LangUtils.class);
     Assert.assertEquals(descriptors.length, COUNT_PAGINATION_RESPONSE_FIELDS_NO_CONTENT);
+  }
+
+  /**
+   * Test 10
+   */
+  @Test(expectedExceptions = ParseProblemException.class)
+  public void test_10_nonexistent_source_file()
+  {
+    final SourceRoot sourceRoot = getResolvingSourceRoot(LangUtils.JAVA_SOURCE_TEST_PATH);
+    sourceRoot.getParserConfiguration().setLanguageLevel(ParserConfiguration.LanguageLevel.JAVA_1_0);
+    PayloadDocumentation.fields(sourceRoot, JacksonPOJO.class, null);
+  }
+
+  /**
+   * Test 11
+   */
+  @Test
+  public void test_11_custom_source_root()
+  {
+    final SourceRoot sourceRoot = getResolvingSourceRoot(LangUtils.JAVA_SOURCE_TEST_PATH);
+    sourceRoot.getParserConfiguration().setLanguageLevel(ParserConfiguration.LanguageLevel.JAVA_18);
+    final FieldDescriptor[] descriptors = PayloadDocumentation.fields(sourceRoot, JacksonPOJO.class, null);
+    Assert.assertEquals(descriptors.length, COUNT_JACKSON_POJO_JSON_PROPERTY_FIELD);
+    Assert.assertEquals(descriptors[0].getPath(), "id");
+    Assert.assertEquals(descriptors[1].getPath(), "differentName");
+    Assert.assertEquals(descriptors[2].getPath(), "notAnnotated");
+    Assert.assertEquals(descriptors[3].getPath(), "differentNameWithValue");
   }
   //CheckStyle:MethodName ON
 }

@@ -14,26 +14,6 @@ import org.testng.annotations.Test;
 public class LangUtilsTest
 {
 
-  /**
-   * Test type for a constructor enclosed class.
-   */
-  private static Class aClass;
-
-  /**
-   * Default constructor.
-   */
-  public LangUtilsTest()
-  {
-    /**
-     * Constructor enclosed class type.
-     */
-    class EnclosedConstructorClass
-    {
-
-    }
-    aClass = EnclosedConstructorClass.class;
-  }
-
   //CheckStyle:MethodName OFF
   /**
    * Test 00
@@ -71,51 +51,8 @@ public class LangUtilsTest
   /**
    * Test 03
    */
-  @Test(expectedExceptions = IllegalArgumentException.class)
-  public void test_03_get_file_path_from_class_enclosed_class_in_class()
-  {
-    LangUtils.getFilePathFromClass(EnclosedClass.class);
-  }
-
-  /**
-   * Test 04
-   */
-  @Test(expectedExceptions = IllegalArgumentException.class)
-  public void test_04_get_file_path_from_class_enclosed_class_in_method()
-  {
-    /**
-     * Method enclosed class type.
-     */
-    class EnclosedMethodClass
-    {
-
-    }
-    LangUtils.getFilePathFromClass(EnclosedMethodClass.class);
-  }
-
-  /**
-   * Test 05
-   */
-  @Test(expectedExceptions = IllegalArgumentException.class)
-  public void test_05_get_file_path_from_class_enclosed_class_in_constructor()
-  {
-    LangUtils.getFilePathFromClass(aClass);
-  }
-
-  /**
-   * Test 06
-   */
   @Test
-  public void test_06_get_file_path_from_class_java_class()
-  {
-    Assert.assertEquals(LangUtils.getFilePathFromClass(String.class), "java/lang/String.java");
-  }
-
-  /**
-   * Test 07
-   */
-  @Test
-  public void test_07_spaghettify()
+  public void test_03_spaghettify()
   {
     final List<String> testLeft = new ArrayList<>();
     final List<String> testRight = new ArrayList<>();
@@ -130,10 +67,10 @@ public class LangUtilsTest
   }
 
   /**
-   * Test 08
+   * Test 04
    */
   @Test
-  public void test_08_spaghettify()
+  public void test_04_spaghettify()
   {
     final List<String> testLeft = new ArrayList<>();
     testLeft.add("I am left");
@@ -144,10 +81,10 @@ public class LangUtilsTest
   }
 
   /**
-   * Test 09
+   * Test 05
    */
   @Test
-  public void test_09_spaghettify()
+  public void test_05_spaghettify()
   {
     final List<String> testLeft = new ArrayList<>();
     testLeft.add("I am left");
@@ -159,13 +96,60 @@ public class LangUtilsTest
   }
 
   /**
+   * Test 06
+   */
+  @Test
+  public void test_06_spaghettify()
+  {
+    final Object[] test = new Object[]{"I am right", 137};
+    final String[] result = LangUtils.spaghettify(String.class, "I am left", test);
+    Assert.assertEquals(result.length, 2);
+    Assert.assertEquals(result[0], "I am left");
+    Assert.assertEquals(result[1], "I am right");
+  }
+
+  /**
+   * Test 07
+   */
+  @Test
+  public void test_07_spaghettify()
+  {
+    final String[] result = LangUtils.spaghettify(String.class, 5);
+    Assert.assertEquals(result.length, 0);
+  }
+
+  /**
+   * Test 08
+   */
+  @Test
+  public void test_08_spaghettify()
+  {
+    final String[] result = LangUtils.spaghettify(String.class, "I am right");
+    Assert.assertEquals(result.length, 1);
+    Assert.assertEquals(result[0], "I am right");
+  }
+
+  /**
+   * Test 09
+   */
+  @Test
+  public void test_09_spaghettify()
+  {
+    final Object[] test = new Object[]{"I am left", new Object[]{"I am right", 137}};
+    final String[] result = LangUtils.spaghettify(String.class, test);
+    Assert.assertEquals(result.length, 2);
+    Assert.assertEquals(result[0], "I am left");
+    Assert.assertEquals(result[1], "I am right");
+  }
+
+  /**
    * Test 10
    */
   @Test
   public void test_10_spaghettify()
   {
-    final Object[] test = new Object[]{"I am right", 137};
-    final String[] result = LangUtils.spaghettify(String.class, "I am left", test);
+    final Object[] test = new Object[]{"I am left", new Object[]{"I am nested now", 137}};
+    final String[] result = LangUtils.spaghettify(String.class, test, "I am right");
     Assert.assertEquals(result.length, 2);
     Assert.assertEquals(result[0], "I am left");
     Assert.assertEquals(result[1], "I am right");
@@ -177,53 +161,6 @@ public class LangUtilsTest
   @Test
   public void test_11_spaghettify()
   {
-    final String[] result = LangUtils.spaghettify(String.class, 5);
-    Assert.assertEquals(result.length, 0);
-  }
-
-  /**
-   * Test 12
-   */
-  @Test
-  public void test_12_spaghettify()
-  {
-    final String[] result = LangUtils.spaghettify(String.class, "I am right");
-    Assert.assertEquals(result.length, 1);
-    Assert.assertEquals(result[0], "I am right");
-  }
-
-  /**
-   * Test 13
-   */
-  @Test
-  public void test_13_spaghettify()
-  {
-    final Object[] test = new Object[]{"I am left", new Object[]{"I am right", 137}};
-    final String[] result = LangUtils.spaghettify(String.class, test);
-    Assert.assertEquals(result.length, 2);
-    Assert.assertEquals(result[0], "I am left");
-    Assert.assertEquals(result[1], "I am right");
-  }
-
-  /**
-   * Test 14
-   */
-  @Test
-  public void test_14_spaghettify()
-  {
-    final Object[] test = new Object[]{"I am left", new Object[]{"I am nested now", 137}};
-    final String[] result = LangUtils.spaghettify(String.class, test, "I am right");
-    Assert.assertEquals(result.length, 2);
-    Assert.assertEquals(result[0], "I am left");
-    Assert.assertEquals(result[1], "I am right");
-  }
-
-  /**
-   * Test 15
-   */
-  @Test
-  public void test_15_spaghettify()
-  {
     final Object[] test = new Object[]{"I am left", new Object[]{"I am nested now", 137}};
     final String[] result = LangUtils.spaghettify(1, String.class, test, "I am right");
     Assert.assertEquals(result.length, 3);
@@ -233,10 +170,10 @@ public class LangUtilsTest
   }
 
   /**
-   * Test 16
+   * Test 12
    */
   @Test
-  public void test_16_spaghettify()
+  public void test_12_spaghettify()
   {
     final List<String> nestedCollection = new ArrayList<>();
     nestedCollection.add("I am nested now");
@@ -249,10 +186,10 @@ public class LangUtilsTest
   }
 
   /**
-   * Test 17
+   * Test 13
    */
   @Test
-  public void test_17_spaghettify()
+  public void test_13_spaghettify()
   {
     final List<String> nestedCollection = new ArrayList<>();
     nestedCollection.add("I am nested now");
@@ -270,10 +207,10 @@ public class LangUtilsTest
   }
 
   /**
-   * Test 18
+   * Test 14
    */
   @Test
-  public void test_18_spaghettify()
+  public void test_14_spaghettify()
   {
     final List<String> nestedCollection = new ArrayList<>();
     nestedCollection.add("I am nested now");
@@ -292,50 +229,33 @@ public class LangUtilsTest
   }
 
   /**
-   * Test 19
+   * Test 15
    */
   @Test(expectedExceptions = IllegalArgumentException.class)
-  public void test_19_spaghettify_class_null()
+  public void test_15_spaghettify_class_null()
   {
     LangUtils.spaghettify(10, null, new ArrayList<>(), new Object[]{});
     Assert.fail("Test should have failed but it did not");
   }
 
   /**
-   * Test 20
+   * Test 16
    */
   @Test(expectedExceptions = IllegalArgumentException.class)
-  public void test_20_spaghettify_inputs_null()
+  public void test_16_spaghettify_inputs_null()
   {
     LangUtils.spaghettify(10, String.class, new ArrayList<>(), (Object[]) null);
     Assert.fail("Test should have failed but it did not");
   }
 
   /**
-   * Test 21
+   * Test 17
    */
   @Test(expectedExceptions = IllegalArgumentException.class)
-  public void test_21_spaghettify_initial_null()
+  public void test_17_spaghettify_initial_null()
   {
     LangUtils.spaghettify(10, String.class, null, new Object[]{});
     Assert.fail("Test should have failed but it did not");
-  }
-
-  /**
-   * Test 22
-   */
-  @Test(expectedExceptions = IllegalArgumentException.class)
-  public void test_22_get_file_path_from_class_enclosed_class_in_constructor()
-  {
-    LangUtils.getFilePathFromClass(null);
-  }
-
-  /**
-   * Class enclosed class type.
-   */
-  class EnclosedClass
-  {
-
   }
   //CheckStyle:MethodName ON
 }

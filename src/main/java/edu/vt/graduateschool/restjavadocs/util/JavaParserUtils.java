@@ -2,6 +2,7 @@
 package edu.vt.graduateschool.restjavadocs.util;
 
 import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -52,6 +53,22 @@ public final class JavaParserUtils
   }
 
   /**
+   * Returns the .java file path relative to its source root by {@link Class}
+   *
+   * @param beanClass type to return path for
+   * @return .java file path
+   */
+  public static String getFilePathFromClass(final Class beanClass)
+  {
+    if (beanClass == null || beanClass.getEnclosingConstructor() != null || beanClass.getEnclosingMethod() != null ||
+            beanClass.getEnclosingClass() != null) {
+      throw new IllegalArgumentException("class parameter cannot be null or an enclosed class");
+    }
+    return beanClass.getPackageName().replaceAll("\\.", File.separator) + File.separator + beanClass.getSimpleName() +
+            LangUtils.JAVA_FILE_EXTENSION;
+  }
+
+  /**
    * Returns a configured resolving compilation unit source root
    *
    * @param sourceRoot path to source
@@ -59,31 +76,35 @@ public final class JavaParserUtils
    */
   public static SourceRoot getResolvingSourceRoot(final String sourceRoot)
   {
-    return getResolvingSourceRoot(sourceRoot, JavaParserUtils.class.getClassLoader());
+    if (sourceRoot == null) {
+      throw new IllegalArgumentException("sourceRoot cannot be null");
+    }
+    final ClassLoader currentLoader = JavaParserUtils.class.getClassLoader();
+    final CombinedTypeSolver typeSolver = new CombinedTypeSolver(
+            new ClassLoaderTypeSolver(currentLoader),
+            new ReflectionTypeSolver(),
+            new JavaParserTypeSolver(sourceRoot));
+    final JavaSymbolSolver symbolSolver = new JavaSymbolSolver(typeSolver);
+    return getResolvingSourceRoot(sourceRoot, new ParserConfiguration()
+            .setStoreTokens(true)
+            .setLanguageLevel(ParserConfiguration.LanguageLevel.BLEEDING_EDGE)
+            .setSymbolResolver(symbolSolver));
   }
 
   /**
    * Returns a configured resolving compilation unit source root
    *
    * @param sourceRoot path to source
-   * @param classLoader class loader to solve from
+   * @param parserConfiguration parser configuration
    * @return Configured {@link SourceRoot}
    */
   public static SourceRoot getResolvingSourceRoot(final String sourceRoot,
-          final ClassLoader classLoader)
+          final ParserConfiguration parserConfiguration)
   {
     if (sourceRoot == null) {
       throw new IllegalArgumentException("sourceRoot cannot be null");
     }
-    final CombinedTypeSolver typeSolver = new CombinedTypeSolver(
-            new ClassLoaderTypeSolver(classLoader),
-            new ReflectionTypeSolver(),
-            new JavaParserTypeSolver(sourceRoot));
-    final JavaSymbolSolver symbolSolver = new JavaSymbolSolver(typeSolver);
-    final ParserConfiguration config = new ParserConfiguration()
-            .setStoreTokens(true)
-            .setSymbolResolver(symbolSolver);
-    return new SourceRoot(Paths.get(sourceRoot), config);
+    return new SourceRoot(Paths.get(sourceRoot), parserConfiguration);
   }
 
   /**

@@ -8,6 +8,11 @@ Provides extensions to Spring REST Docs for automatic snippet generation from Ja
 * Resolve javadoc comment tag links
 * Enclosed class support
 
+v0.2 Features:
+* JDK21 Support (minimum requirement)
+* Ability to provide custom SourceRoot to fields and descriptors
+* Updated dependencies
+
 v0.1 Features:
 
 * Generate response fields from Javadocs for non-enclosed classes
@@ -20,7 +25,7 @@ Maven
 <dependency>
   <groupId>edu.vt.graduateschool</groupId>
   <artifactId>restjavadocs</artifactId>
-  <version>0.1</version>
+  <version>0.2</version>
 </dependency>
 ```
   

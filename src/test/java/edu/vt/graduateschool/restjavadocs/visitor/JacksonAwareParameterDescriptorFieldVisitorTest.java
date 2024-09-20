@@ -9,6 +9,7 @@ import com.github.javaparser.utils.SourceRoot;
 import edu.vt.graduateschool.restjavadocs.beans.JacksonPOJO;
 import edu.vt.graduateschool.restjavadocs.beans.JacksonPOJOIgnoreProperties;
 import edu.vt.graduateschool.restjavadocs.beans.LessCommonPOJO;
+import edu.vt.graduateschool.restjavadocs.util.JavaParserUtils;
 import edu.vt.graduateschool.restjavadocs.util.LangUtils;
 import org.springframework.restdocs.request.ParameterDescriptor;
 import org.testng.Assert;
@@ -35,7 +36,7 @@ public class JacksonAwareParameterDescriptorFieldVisitorTest
     final JacksonAwareParameterDescriptorFieldVisitor visitor = new JacksonAwareParameterDescriptorFieldVisitor();
     final SourceRoot root = getResolvingSourceRoot(LangUtils.JAVA_SOURCE_TEST_PATH);
     final CompilationUnit compilationUnit = root.parse("",
-            LangUtils.getFilePathFromClass(JacksonPOJO.class));
+            JavaParserUtils.getFilePathFromClass(JacksonPOJO.class));
     visitor.visit(compilationUnit, null);
     descriptors.addAll(visitor.getParameterDescriptors());
     Assert.assertEquals(descriptors.size(), 4);
@@ -62,7 +63,7 @@ public class JacksonAwareParameterDescriptorFieldVisitorTest
     final JacksonAwareParameterDescriptorFieldVisitor visitor = new JacksonAwareParameterDescriptorFieldVisitor();
     final SourceRoot root = getResolvingSourceRoot(LangUtils.JAVA_SOURCE_TEST_PATH);
     final CompilationUnit compilationUnit = root.parse("",
-            LangUtils.getFilePathFromClass(JacksonPOJO.class));
+            JavaParserUtils.getFilePathFromClass(JacksonPOJO.class));
     visitor.visit(compilationUnit, Deprecated.class);
     descriptors.addAll(visitor.getParameterDescriptors());
     Assert.assertEquals(descriptors.size(), 1);
@@ -82,7 +83,7 @@ public class JacksonAwareParameterDescriptorFieldVisitorTest
     final JacksonAwareParameterDescriptorFieldVisitor visitor = new JacksonAwareParameterDescriptorFieldVisitor();
     final SourceRoot root = getResolvingSourceRoot(LangUtils.JAVA_SOURCE_TEST_PATH);
     final CompilationUnit compilationUnit = root.parse("",
-            LangUtils.getFilePathFromClass(LessCommonPOJO.class));
+            JavaParserUtils.getFilePathFromClass(LessCommonPOJO.class));
     visitor.visit(compilationUnit, JsonProperty.class);
     descriptors.addAll(visitor.getParameterDescriptors());
     Assert.assertEquals(descriptors.size(), 3);
@@ -104,7 +105,7 @@ public class JacksonAwareParameterDescriptorFieldVisitorTest
     final JacksonAwareParameterDescriptorFieldVisitor visitor = new JacksonAwareParameterDescriptorFieldVisitor();
     final SourceRoot root = getResolvingSourceRoot(LangUtils.JAVA_SOURCE_TEST_PATH);
     final CompilationUnit compilationUnit = root.parse("",
-            LangUtils.getFilePathFromClass(JacksonPOJOIgnoreProperties.class));
+            JavaParserUtils.getFilePathFromClass(JacksonPOJOIgnoreProperties.class));
     visitor.visit(compilationUnit, null);
     descriptors.addAll(visitor.getParameterDescriptors());
     Assert.assertEquals(descriptors.size(), 3);
