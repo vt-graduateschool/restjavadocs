@@ -1,7 +1,6 @@
 /* See LICENSE for licensing and NOTICE for copyright. */
 package edu.vt.graduateschool.restjavadocs.util;
 
-import java.io.File;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -131,22 +130,6 @@ public final class LangUtils
       }
     }
     return initial.toArray((T[]) Array.newInstance(clazz, initial.size()));
-  }
-
-  /**
-   * Returns the .java file path relative to its source root by {@link Class}
-   *
-   * @param beanClass type to return path for
-   * @return .java file path
-   */
-  public static String getFilePathFromClass(final Class beanClass)
-  {
-    if (beanClass == null || beanClass.getEnclosingConstructor() != null || beanClass.getEnclosingMethod() != null ||
-            beanClass.getEnclosingClass() != null) {
-      throw new IllegalArgumentException("class parameter cannot be null or an enclosed class");
-    }
-    return beanClass.getPackageName().replaceAll("\\.", File.separator) +
-            File.separator + beanClass.getSimpleName() + JAVA_FILE_EXTENSION;
   }
 
 }

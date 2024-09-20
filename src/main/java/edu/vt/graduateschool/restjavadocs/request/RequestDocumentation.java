@@ -16,9 +16,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.restdocs.request.ParameterDescriptor;
 
+import static edu.vt.graduateschool.restjavadocs.util.JavaParserUtils.getFilePathFromClass;
 import static edu.vt.graduateschool.restjavadocs.util.JavaParserUtils.getResolvingSourceRoot;
 import static edu.vt.graduateschool.restjavadocs.util.LangUtils.JAVA_SOURCE_MAIN_PATH;
-import static edu.vt.graduateschool.restjavadocs.util.LangUtils.getFilePathFromClass;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 
 /**
@@ -235,8 +235,7 @@ public final class RequestDocumentation
           final Class controllerClass, final Map<String, String[]> annotationFilterValues)
           throws ParseProblemException
   {
-    final String sourcesBasePath = sourceRoot == null ? JAVA_SOURCE_MAIN_PATH : sourceRoot;
-    return descriptors(sourcesBasePath, getFilePathFromClass(controllerClass),
+    return descriptors(sourceRoot, getFilePathFromClass(controllerClass),
             annotationFilterValues);
   }
 
@@ -254,12 +253,29 @@ public final class RequestDocumentation
           final String sourceFile, final Map<String, String[]> annotationFilterValues)
           throws ParseProblemException
   {
+    final String sourcesBasePath = sourceRoot == null ? JAVA_SOURCE_MAIN_PATH : sourceRoot;
+    return descriptors(getResolvingSourceRoot(sourcesBasePath), sourceFile, annotationFilterValues);
+  }
+
+  /**
+   * Returns {@link ParameterDescriptor}[] from a given java class source by using method's Javadocs.
+   *
+   * @param sourceRoot base path of the sources folder
+   * @param sourceFile path to the .java file
+   * @param annotationFilterValues value map to filter for matching annotation attributes
+   * @return Generated descriptors from Javadocs
+   * @throws com.github.javaparser.ParseProblemException {@link ParseProblemException} is thrown if the source could not
+   * be parsed
+   */
+  private static ParameterDescriptor[] descriptors(final SourceRoot sourceRoot,
+          final String sourceFile, final Map<String, String[]> annotationFilterValues)
+          throws ParseProblemException
+  {
     final List<ParameterDescriptor> descriptors = new ArrayList<>();
     final SpringWebParameterDescriptorMethodVisitor visitor =
             new SpringWebParameterDescriptorMethodVisitor(annotationFilterValues == null ?
                     new HashMap<>() : annotationFilterValues);
-    final SourceRoot root = getResolvingSourceRoot(sourceRoot);
-    final CompilationUnit compilationUnit = root.parse("", sourceFile);
+    final CompilationUnit compilationUnit = sourceRoot.parse("", sourceFile);
     visitor.visit(compilationUnit, null);
     descriptors.addAll(visitor.getParameterDescriptors());
     return descriptors.toArray(ParameterDescriptor[]::new);

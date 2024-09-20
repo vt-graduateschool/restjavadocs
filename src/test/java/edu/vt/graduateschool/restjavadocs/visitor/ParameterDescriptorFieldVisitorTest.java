@@ -10,6 +10,7 @@ import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.utils.SourceRoot;
 import edu.vt.graduateschool.restjavadocs.beans.JacksonPOJO;
 import edu.vt.graduateschool.restjavadocs.beans.LessCommonPOJO;
+import edu.vt.graduateschool.restjavadocs.util.JavaParserUtils;
 import edu.vt.graduateschool.restjavadocs.util.LangUtils;
 import org.springframework.restdocs.request.ParameterDescriptor;
 import org.testng.Assert;
@@ -53,7 +54,7 @@ public class ParameterDescriptorFieldVisitorTest
     final ParameterDescriptorFieldVisitor visitor = new ParameterDescriptorFieldVisitor();
     final SourceRoot root = getResolvingSourceRoot(LangUtils.JAVA_SOURCE_TEST_PATH);
     final CompilationUnit compilationUnit = root.parse("",
-            LangUtils.getFilePathFromClass(JacksonPOJO.class));
+            JavaParserUtils.getFilePathFromClass(JacksonPOJO.class));
     visitor.visit(compilationUnit, null);
     descriptors.addAll(visitor.getParameterDescriptors());
     Assert.assertEquals(descriptors.size(), COUNT_JACKSON_POJO_FIELDS);
@@ -80,7 +81,7 @@ public class ParameterDescriptorFieldVisitorTest
     final ParameterDescriptorFieldVisitor visitor = new ParameterDescriptorFieldVisitor();
     final SourceRoot root = getResolvingSourceRoot(LangUtils.JAVA_SOURCE_TEST_PATH);
     final CompilationUnit compilationUnit = root.parse("",
-            LangUtils.getFilePathFromClass(JacksonPOJO.class));
+            JavaParserUtils.getFilePathFromClass(JacksonPOJO.class));
     visitor.visit(compilationUnit, Deprecated.class);
     descriptors.addAll(visitor.getParameterDescriptors());
     Assert.assertEquals(descriptors.size(), 1);
@@ -100,7 +101,7 @@ public class ParameterDescriptorFieldVisitorTest
     final ParameterDescriptorFieldVisitor visitor = new ParameterDescriptorFieldVisitor();
     final SourceRoot root = getResolvingSourceRoot(LangUtils.JAVA_SOURCE_TEST_PATH);
     final CompilationUnit compilationUnit = root.parse("",
-            LangUtils.getFilePathFromClass(LessCommonPOJO.class));
+            JavaParserUtils.getFilePathFromClass(LessCommonPOJO.class));
     visitor.visit(compilationUnit, JsonProperty.class);
     descriptors.addAll(visitor.getParameterDescriptors());
     Assert.assertEquals(descriptors.size(), COUNT_LESS_COMMON_POJO_JSON_PROPERTY_FIELD);

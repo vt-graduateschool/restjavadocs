@@ -9,6 +9,7 @@ import edu.vt.graduateschool.restjavadocs.controller.SpringRestController;
 import edu.vt.graduateschool.restjavadocs.controller.SpringRestControllerMalformedComments;
 import edu.vt.graduateschool.restjavadocs.request.RequestDocumentation;
 import edu.vt.graduateschool.restjavadocs.request.RequestMappingFilter;
+import edu.vt.graduateschool.restjavadocs.util.JavaParserUtils;
 import edu.vt.graduateschool.restjavadocs.util.LangUtils;
 import org.springframework.restdocs.request.ParameterDescriptor;
 import org.springframework.web.bind.annotation.InitBinder;
@@ -39,7 +40,7 @@ public class SpringWebParameterDescriptorMethodVisitorTest
             RequestDocumentation.filterToMap(filter));
     final SourceRoot root = getResolvingSourceRoot(LangUtils.JAVA_SOURCE_TEST_PATH);
     final CompilationUnit compilationUnit = root.parse("",
-            LangUtils.getFilePathFromClass(SpringRestController.class));
+            JavaParserUtils.getFilePathFromClass(SpringRestController.class));
     visitor.visit(compilationUnit, InitBinder.class);
     descriptors.addAll(visitor.getParameterDescriptors());
     Assert.assertEquals(descriptors.size(), 2);
@@ -58,7 +59,7 @@ public class SpringWebParameterDescriptorMethodVisitorTest
     );
     final SourceRoot root = getResolvingSourceRoot(LangUtils.JAVA_SOURCE_TEST_PATH);
     final CompilationUnit compilationUnit = root.parse("",
-            LangUtils.getFilePathFromClass(SpringRestController.class));
+            JavaParserUtils.getFilePathFromClass(SpringRestController.class));
     visitor.visit(compilationUnit, null);
     descriptors.addAll(visitor.getParameterDescriptors());
     Assert.assertEquals(descriptors.size(), 2);
@@ -77,7 +78,7 @@ public class SpringWebParameterDescriptorMethodVisitorTest
     );
     final SourceRoot root = getResolvingSourceRoot(LangUtils.JAVA_SOURCE_TEST_PATH);
     final CompilationUnit compilationUnit = root.parse("",
-            LangUtils.getFilePathFromClass(SpringRestController.class));
+            JavaParserUtils.getFilePathFromClass(SpringRestController.class));
     visitor.visit(compilationUnit, null);
     descriptors.addAll(visitor.getParameterDescriptors());
     Assert.assertEquals(descriptors.size(), 0);
@@ -107,7 +108,7 @@ public class SpringWebParameterDescriptorMethodVisitorTest
     );
     final SourceRoot root = getResolvingSourceRoot(LangUtils.JAVA_SOURCE_TEST_PATH);
     final CompilationUnit compilationUnit = root.parse("",
-            LangUtils.getFilePathFromClass(SpringRestController.class));
+            JavaParserUtils.getFilePathFromClass(SpringRestController.class));
     visitor.visit(compilationUnit, null);
     descriptors.addAll(visitor.getParameterDescriptors());
     Assert.assertEquals(descriptors.size(), 1);
@@ -126,7 +127,7 @@ public class SpringWebParameterDescriptorMethodVisitorTest
     );
     final SourceRoot root = getResolvingSourceRoot(LangUtils.JAVA_SOURCE_TEST_PATH);
     final CompilationUnit compilationUnit = root.parse("",
-            LangUtils.getFilePathFromClass(SpringRestController.class));
+            JavaParserUtils.getFilePathFromClass(SpringRestController.class));
     visitor.visit(compilationUnit, null);
     descriptors.addAll(visitor.getParameterDescriptors());
     Assert.assertEquals(descriptors.size(), 0);
@@ -145,7 +146,7 @@ public class SpringWebParameterDescriptorMethodVisitorTest
     );
     final SourceRoot root = getResolvingSourceRoot(LangUtils.JAVA_SOURCE_TEST_PATH);
     final CompilationUnit compilationUnit = root.parse("",
-            LangUtils.getFilePathFromClass(SpringRestController.class));
+            JavaParserUtils.getFilePathFromClass(SpringRestController.class));
     visitor.visit(compilationUnit, null);
     descriptors.addAll(visitor.getParameterDescriptors());
     Assert.assertEquals(descriptors.size(), 0);
@@ -163,7 +164,7 @@ public class SpringWebParameterDescriptorMethodVisitorTest
     );
     final SourceRoot root = getResolvingSourceRoot(LangUtils.JAVA_SOURCE_TEST_PATH);
     final CompilationUnit compilationUnit = root.parse("",
-            LangUtils.getFilePathFromClass(SpringRestControllerMalformedComments.class));
+            JavaParserUtils.getFilePathFromClass(SpringRestControllerMalformedComments.class));
     visitor.visit(compilationUnit, null);
     Assert.fail("Test should have failed but it did not");
   }
@@ -180,7 +181,7 @@ public class SpringWebParameterDescriptorMethodVisitorTest
     );
     final SourceRoot root = getResolvingSourceRoot(LangUtils.JAVA_SOURCE_TEST_PATH);
     final CompilationUnit compilationUnit = root.parse("",
-            LangUtils.getFilePathFromClass(SpringRestController.class));
+            JavaParserUtils.getFilePathFromClass(SpringRestController.class));
     visitor.visit(compilationUnit, null);
     Assert.assertEquals(visitor.getParameterDescriptors().size(), 2);
   }

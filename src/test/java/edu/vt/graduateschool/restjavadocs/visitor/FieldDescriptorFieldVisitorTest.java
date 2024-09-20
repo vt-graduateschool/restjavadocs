@@ -15,6 +15,7 @@ import org.springframework.restdocs.payload.FieldDescriptor;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
+import static edu.vt.graduateschool.restjavadocs.util.JavaParserUtils.getFilePathFromClass;
 import static edu.vt.graduateschool.restjavadocs.util.JavaParserUtils.getResolvingSourceRoot;
 
 /**
@@ -53,7 +54,7 @@ public class FieldDescriptorFieldVisitorTest
     final FieldDescriptorFieldVisitor visitor = new FieldDescriptorFieldVisitor();
     final SourceRoot root = getResolvingSourceRoot(LangUtils.JAVA_SOURCE_TEST_PATH);
     final CompilationUnit compilationUnit = root.parse("",
-            LangUtils.getFilePathFromClass(JacksonPOJO.class));
+            getFilePathFromClass(JacksonPOJO.class));
     visitor.visit(compilationUnit, null);
     descriptors.addAll(visitor.getFieldDescriptors());
     Assert.assertEquals(descriptors.size(), COUNT_JACKSON_POJO_FIELDS);
@@ -80,7 +81,7 @@ public class FieldDescriptorFieldVisitorTest
     final FieldDescriptorFieldVisitor visitor = new FieldDescriptorFieldVisitor();
     final SourceRoot root = getResolvingSourceRoot(LangUtils.JAVA_SOURCE_TEST_PATH);
     final CompilationUnit compilationUnit = root.parse("",
-            LangUtils.getFilePathFromClass(JacksonPOJO.class));
+            getFilePathFromClass(JacksonPOJO.class));
     visitor.visit(compilationUnit, Deprecated.class);
     descriptors.addAll(visitor.getFieldDescriptors());
     Assert.assertEquals(descriptors.size(), 1);
@@ -100,7 +101,7 @@ public class FieldDescriptorFieldVisitorTest
     final FieldDescriptorFieldVisitor visitor = new FieldDescriptorFieldVisitor();
     final SourceRoot root = getResolvingSourceRoot(LangUtils.JAVA_SOURCE_TEST_PATH);
     final CompilationUnit compilationUnit = root.parse("",
-            LangUtils.getFilePathFromClass(LessCommonPOJO.class));
+            getFilePathFromClass(LessCommonPOJO.class));
     visitor.visit(compilationUnit, JsonProperty.class);
     descriptors.addAll(visitor.getFieldDescriptors());
     Assert.assertEquals(descriptors.size(), COUNT_LESS_COMMON_POJO_JSON_PROPERTY_FIELD);
